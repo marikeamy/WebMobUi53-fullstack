@@ -1,4 +1,7 @@
+
+
 <!DOCTYPE html>
+<!-- default layout of the MSN app -->
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
@@ -32,6 +35,10 @@
                     <a href="{{ url('/posts') }}"
                         class="block bg-teal-700 dark:bg-purple-900 px-3 py-1 rounded-md hover:bg-teal-800 dark:hover:bg-purple-800">
                         {{ __('ui.posts.index.title') }}
+                    </a>
+                    <a href="{{ url('/polls/dashboard') }}"
+                        class="block bg-teal-700 dark:bg-purple-900 px-3 py-1 rounded-md hover:bg-teal-800 dark:hover:bg-purple-800">
+                        {{ __('ui.polls.see_polls') }}
                     </a>
                 </div>
 

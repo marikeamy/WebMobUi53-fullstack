@@ -230,4 +230,7 @@ return [
             'author' => 'Publié par :first_name :last_name',
         ],
     ],
+    'polls' => [
+        'see_polls' => 'Tous les sondages',
+    ],
 ];
