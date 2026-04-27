@@ -26,7 +26,10 @@
     </thead>
     <tbody>
       <tr v-for="poll in polls" :key="poll.id">
-        <td class="border px-3 py-2"><button @click="delPoll(poll.id)">Supp.</button></td>
+        <td class="border px-3 py-2">
+            <button type="button" id="delete-btn" @click="delPoll(poll.id)">Supp.</button>
+            <button type="button" id="modify-btn" @click="modifyPoll(poll.id)">Modifier</button>
+        </td>
         <td class="border px-3 py-2">{{ poll.id }}</td>
         <td class="border px-3 py-2">{{ poll.title || '-' }}</td>
         <td class="border px-3 py-2">{{ poll.question }}</td>
@@ -39,12 +42,19 @@
 </template>
 
 <style scoped>
-  button {
-    background-color: #e3342f;
+  button{
     color: white;
     padding: 0.25rem 0.5rem;
     border: none;
     border-radius: 0.25rem;
     cursor: pointer;
+  }
+
+  #delete-btn{
+    background-color: rgb(151, 24, 24);
+  }
+
+  #modify-btn{
+    background-color: rgb(25, 75, 151);
   }
 </style>

@@ -17,5 +17,10 @@ export function usePollStore() {
     }
   }
 
+  async function modifyPoll(id) {
+    const result = await fetchApi({ url: 'polls/' + id, method: 'PATCH' });
+    //logique d'affichage du formulaire de modification ?
+  }
+
   return { polls, setPolls, deletePoll };
 }
