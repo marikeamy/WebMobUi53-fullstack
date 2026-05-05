@@ -2,21 +2,33 @@
     import { ref } from 'vue';
     import { usePollStore } from '@/stores/usePollStore.js';
 
+    //defineEmits permet à un composant enfant d'envoyer un signal vers son parent.
+    //ici, quand le formulaire est soumis, pollForm dit à son parent (pollTable) qu'il faut fermer le modal.
     const emit = defineEmits(['close']);
-    const { createPoll } = usePollStore();
+    //L'inverse de defineEmits sont les props. C'est le parent qui envoie un signal à son enfant.
+    //(PollForm reçoit le poll de Polltable ici)
+    const props = defineProps(['poll'])
+    const { createPoll, modifyPoll } = usePollStore();
 
-    const title = ref('');
-    const question = ref('');
-    const options = ref(['', '']);
-    const allowMultipleChoices = ref(false);
-    const allowVoteChange = ref(false);
-    const resultsPublic = ref(false);
-    const duration = ref('');
+    //On passe les données si elles existent, sinon des champs vides
+    //On utilise ça pour le formulaire de modification
+    const title = ref(props.poll ? props.poll.title : '');
+    const question = ref(props.poll ? props.poll.question : '');
+    const options = ref(props.poll ? props.poll.options.map(option => option.label) : ['', '']);
+    const allowMultipleChoices = ref(props.poll ? props.poll.allow_multiple_choices : false);
+    const allowVoteChange = ref(props.poll ? props.poll.allow_vote_change : false);
+    const resultsPublic = ref(props.poll ? props.poll.results_public : false);
+    const duration = ref(props.poll ? props.poll.duration : '');
     const addOption = () => options.value.push('');
 
     const submitPoll = async () => {
-        await createPoll({ title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: duration.value }, false);
-        emit('close');
+        if(!props.poll){
+            await createPoll({ title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: duration.value }, false);
+            emit('close');
+        }else{
+            await modifyPoll(props.poll.id, { title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: duration.value });
+            emit('close');
+        }
     };
 
     const saveDraft = async () => {

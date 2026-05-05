@@ -5,10 +5,16 @@
 
     const { polls, deletePoll } = usePollStore();
     const showCreateForm = ref(false);
+    const pollAModifier = ref('');
 
     async function delPoll(id) {
         console.log('delete Poll ID:', id);
         await deletePoll(id);
+    }
+
+    async function modPoll(poll) {
+        showCreateForm.value = true;
+        pollAModifier.value = poll;
     }
 </script>
 
@@ -19,7 +25,7 @@
 <!-- modal overlay -->
 <div v-if="showCreateForm" class="modal-overlay" @click.self="showCreateForm = false">
   <div class="modal-box">
-    <PollForm @close="showCreateForm = false" />
+    <PollForm @close="showCreateForm = false" :poll="pollAModifier"/>
   </div>
 </div>
 
@@ -42,7 +48,7 @@
       <tr v-for="poll in polls" :key="poll.id">
         <td class="border px-3 py-2">
             <button type="button" id="delete-btn" @click="delPoll(poll.id)">Supp.</button>
-            <button type="button" id="modify-btn" @click="modifyPoll(poll.id)">Modifier</button>
+            <button type="button" id="modify-btn" @click="modPoll(poll)">Modifier</button>
         </td>
         <td class="border px-3 py-2">{{ poll.id }}</td>
         <td class="border px-3 py-2">{{ poll.title || '-' }}</td>

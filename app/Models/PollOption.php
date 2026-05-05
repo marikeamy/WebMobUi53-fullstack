@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PollOption extends Model
 {
-
+    //Latavel a une protection contre les attaques de mass assignment -> qqun qui envoit des données malveillantes
+    //pour remplir des champs qu'il devrait pas pouvoir modifier
+    //Ici, on dit "seul label peut être rempli de cette façon" avec fillable.
     protected $fillable = ['label'];
 
     /**
