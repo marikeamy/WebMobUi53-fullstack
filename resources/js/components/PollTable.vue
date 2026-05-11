@@ -19,8 +19,9 @@
 </script>
 
 <template>
-<!-- create form button-->
-<button id="add-btn" @click="showCreateForm = true">Créer un sondage</button>
+<!-- create form button
+ On réinitialise pollAModifier pour ne pas avoir les données d'un sondage modifié auparavant-->
+<button id="add-btn" @click="showCreateForm = true; pollAModifier=null">Créer un sondage</button>
 
 <!-- modal overlay -->
 <div v-if="showCreateForm" class="modal-overlay" @click.self="showCreateForm = false">

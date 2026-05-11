@@ -18,9 +18,9 @@ export function usePollStore() {
     }
   }
 
-  async function modifyPoll(id, {title, question, options, duration, allowMultipleChoices, allowVoteChange, resultsPublic}) {
+  async function modifyPoll(id, {title, question, options, duration, allowMultipleChoices, allowVoteChange, resultsPublic}, is_draft) {
     //result contient la réponse du serveur avec le poll mis à jour.
-    const result = await fetchApi({ url: 'polls/' + id, method: 'PATCH', data: {title:title, question:question, options:options, duration:duration, allowMultipleChoices:allowMultipleChoices, allowVoteChange:allowVoteChange, resultsPublic:resultsPublic}});
+    const result = await fetchApi({ url: 'polls/' + id, method: 'PATCH', data: {title:title, question:question, options:options, duration:duration, allowMultipleChoices:allowMultipleChoices, allowVoteChange:allowVoteChange, resultsPublic:resultsPublic, is_draft:is_draft}});
     if (result) {
         //on modifie la valeur réactive avec le poll mis à jour
         //on checke dans le tableau si l'id correspond au poll modifié, si c'est le cas, on l'update avec le result

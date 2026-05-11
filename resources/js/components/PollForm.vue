@@ -19,6 +19,7 @@
     const allowVoteChange = ref(props.poll ? props.poll.allow_vote_change : false);
     const resultsPublic = ref(props.poll ? props.poll.results_public : false);
     const duration = ref(props.poll ? props.poll.duration : '');
+    const is_draft = ref(props.poll ? props.poll.is_draft : true)
     const addOption = () => options.value.push('');
 
     const submitPoll = async () => {
@@ -26,20 +27,26 @@
             await createPoll({ title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: duration.value }, false);
             emit('close');
         }else{
-            await modifyPoll(props.poll.id, { title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: duration.value });
+            await modifyPoll(props.poll.id, { title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: duration.value }, false);
             emit('close');
         }
     };
 
     const saveDraft = async () => {
-        await createPoll({ title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: duration.value }, true);
-        emit('close');
+        if(!props.poll) {
+            await createPoll({ title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: duration.value }, true);
+            emit('close');
+        }else{
+            await modifyPoll(props.poll.id, { title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: duration.value }, true);
+            emit('close');
+        }
     };
 </script>
 
 <template>
     <form class="poll-form">
-        <h2 class="form-title">Nouveau sondage</h2>
+        <h2 v-if="poll" class="form-title">Modification du sondage</h2>
+        <h2 v-else class="form-title">Nouveau sondage</h2>
 
         <div class="field">
             <label>Titre <span class="optional">(optionnel)</span></label>
@@ -81,7 +88,8 @@
         </div>
 
         <div class="actions">
-            <button type="button" class="btn-draft" @click="saveDraft">Sauvegarder en brouillon</button>
+            <button v-if="poll" type="button" class="btn-draft" @click="saveDraft">Valider les modifications</button>
+            <button v-else type="button" class="btn-draft" @click="saveDraft">Sauvegarder en brouillon</button>
             <button type="button" class="btn-submit" @click="submitPoll">Publier le sondage</button>
         </div>
     </form>
