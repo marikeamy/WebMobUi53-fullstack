@@ -147,6 +147,7 @@ public function update(Request $request, int $id)
         }
 
         $poll->save();
-        return $poll;
+        //c quoi load ?
+        return $poll->load('options');
     }
 }

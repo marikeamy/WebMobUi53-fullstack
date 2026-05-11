@@ -23,6 +23,7 @@ Route::get('/about', function () {
 Route::get('/@{username}', [ProfileController::class, 'show'])->where('username', '[A-Za-z0-9-_]+');
 
 Route::resource('posts', PostController::class)->only(['index', 'show']);
+Route::get('/vote/{token}', fn() => view('polls.vote'));
 
 Route::controller(AuthController::class)->group(function () {
     Route::get('/auth/register', 'showRegister');
