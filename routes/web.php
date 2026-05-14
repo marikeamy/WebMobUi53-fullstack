@@ -23,6 +23,8 @@ Route::get('/about', function () {
 Route::get('/@{username}', [ProfileController::class, 'show'])->where('username', '[A-Za-z0-9-_]+');
 
 Route::resource('posts', PostController::class)->only(['index', 'show']);
+//fn() est une fonction anonyme PHP (syntaxe courte de function())
+//Elle est appelée par Laravel quand qqun visite /vote/{token} et retourne la vue blade.
 Route::get('/vote/{token}', fn() => view('polls.vote'));
 
 Route::controller(AuthController::class)->group(function () {

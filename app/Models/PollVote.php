@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PollVote extends Model
 {
+    //rappel, $fillable protège contre le mass assignment. Sans lui, Laravel refure qu'on passe un tableau de valeurs
+    //direct à create().
+    protected $fillable = ['poll_id', 'poll_option_id', 'user_id'];
+
     /**
      * Get the poll that owns the vote.
      */

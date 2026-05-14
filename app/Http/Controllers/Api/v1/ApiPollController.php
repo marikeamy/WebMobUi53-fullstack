@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Poll;
 use App\Models\PollOption;
+use App\Models\PollVote;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+
+use function Laravel\Prompts\title;
 
 class ApiPollController extends Controller
 {
@@ -96,8 +99,8 @@ class ApiPollController extends Controller
         return response()->json(['message' => 'success'], 200);
     }
 
-public function update(Request $request, int $id)
-    {
+    public function update(Request $request, int $id)
+        {
         //get poll
         $poll = Poll::where('id', $id)->where('user_id', $request->user()->id)->first();
 
@@ -149,5 +152,18 @@ public function update(Request $request, int $id)
         $poll->save();
         //c quoi load ?
         return $poll->load('options');
+    }
+
+    public function vote(Request $request, int $id){
+        //get option
+        $option = PollOption::findOrFail($id);
+
+        $pollVote = PollVote::create([
+            'poll_id' => $option->poll_id,
+            'poll_option_id' => $option->id,
+            'user_id' => $request->user()->id
+        ]);
+
+        return response()->json($pollVote);
     }
 }
