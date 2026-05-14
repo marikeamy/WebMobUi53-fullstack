@@ -41,4 +41,5 @@ Route::middleware('auth')->group(function () {
     Route::match(['put', 'patch'], '/likes/{post}', [LikeController::class, 'update']);
     Route::resource('tokens', TokenController::class)->only(['index', 'create', 'store', 'destroy']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::get('/results/{id}', fn() => view('polls.results'));
 });
