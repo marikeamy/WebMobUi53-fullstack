@@ -3,6 +3,7 @@
     import { ref, onMounted, computed } from 'vue'
     import { useRoute } from 'vue-router'
     import { useFetchApi } from '@/composables/useFetchApi'
+    import PollChart from './PollChart.vue'
 
     const route = useRoute()
     const { fetchApi } = useFetchApi()
@@ -51,6 +52,7 @@
                     </div>
                 </div>
             </div>
+            <PollChart :options="poll.options" />
         </div>
 
     </div>
