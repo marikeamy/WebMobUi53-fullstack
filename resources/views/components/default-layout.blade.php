@@ -70,7 +70,7 @@
         </nav>
     </header>
 
-    <main class="container mx-auto px-4 py-8 sm:px-6 lg:px-8 flex-grow dark:text-white max-w-2xl">
+    <main class="container mx-auto px-4 py-8 sm:px-6 lg:px-8 flex-grow dark:text-white">
         {{ $slot }}
     </main>
 

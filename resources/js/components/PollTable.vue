@@ -3,7 +3,7 @@
     import PollForm from './PollForm.vue';
     import { ref } from 'vue';
 
-    const { polls, deletePoll } = usePollStore();
+    const { polls, deletePoll, startPoll } = usePollStore();
     const showCreateForm = ref(false);
     const pollAModifier = ref('');
 
@@ -15,6 +15,11 @@
     async function modPoll(poll) {
         showCreateForm.value = true;
         pollAModifier.value = poll;
+    }
+
+    const formatDate = (dateStr) => {
+        if (!dateStr) return '-'
+        return new Date(dateStr).toLocaleString('fr-CH', { dateStyle: 'short', timeStyle: 'short' })
     }
 </script>
 
@@ -50,13 +55,15 @@
         <td class="border px-3 py-2">
             <button type="button" id="delete-btn" @click="delPoll(poll.id)">Supp.</button>
             <button type="button" id="modify-btn" @click="modPoll(poll)">Modifier</button>
+            <a :href="`/results/${poll.id}`" class="btn-link">Résultats</a>
+            <button v-if="poll.is_draft" id="start-btn" @click="startPoll(poll.id)">Lancer</button>
         </td>
         <td class="border px-3 py-2">{{ poll.id }}</td>
         <td class="border px-3 py-2">{{ poll.title || '-' }}</td>
         <td class="border px-3 py-2">{{ poll.question }}</td>
         <td class="border px-3 py-2">{{ poll.is_draft ? 'Oui' : 'Non' }}</td>
-        <td class="border px-3 py-2">{{ poll.started_at || '-' }}</td>
-        <td class="border px-3 py-2">{{ poll.ends_at || '-' }}</td>
+        <td class="border px-3 py-2">{{ formatDate(poll.started_at) }}</td>
+        <td class="border px-3 py-2">{{ formatDate(poll.ends_at) }}</td>
       </tr>
     </tbody>
   </table>
@@ -72,9 +79,20 @@
     margin-bottom: 10px;
   }
 
+  .btn-link {
+    display: inline-block;
+    color: white;
+    background-color: rgb(80, 80, 80);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    text-decoration: none;
+    margin-bottom: 10px;
+  }
+
   #delete-btn { background-color: rgb(151, 24, 24); }
   #modify-btn { background-color: rgb(25, 75, 151); }
-  #add-btn { background-color: rgb(31, 148, 11); }
+  #start-btn  { background-color: rgb(31, 148, 11); }
+  #add-btn    { background-color: rgb(31, 148, 11); }
 
   .modal-overlay {
     position: fixed;

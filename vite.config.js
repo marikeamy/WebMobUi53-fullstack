@@ -8,9 +8,11 @@ export default defineConfig({
         vue(),
         laravel({
             input: [
+                //Liste des entrypoint que vite va compiler
                 'resources/css/app.css',
                 'resources/js/poll-dashboard.js',
-                'resources/js/poll-vote.js'
+                'resources/js/poll-vote.js',
+                'resources/js/poll-results.js'
             ],
             refresh: true,
         }),

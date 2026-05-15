@@ -166,4 +166,37 @@ class ApiPollController extends Controller
 
         return response()->json($pollVote);
     }
+
+    public function results(Request $request, int $id){
+        //get poll with votes
+        $poll = Poll::with(['options' => function ($query) {
+              $query->withCount('votes');
+          }])->where('id', $id)->where('user_id', $request->user()->id)->first();
+
+        if (!$poll) {
+            return response()->json(['message' => 'Poll not found.'], 404);
+        }
+
+        return response()->json($poll);
+    }
+
+    public function start(Request $request, int $id){
+
+        //get poll
+        $poll = Poll::where('id', $id)->where('user_id', $request->user()->id)->first();
+
+        if (!$poll) {
+            return response()->json(['message' => 'Poll not found.'], 404);
+        }
+
+        //On met is_draft en false (on le "start")
+        if($poll->is_draft) {
+            $poll->is_draft = false;
+            $poll->started_at = now();
+            $poll->ends_at = (now()->addSeconds($poll->duration));
+        }
+
+        $poll->save();
+        return response()->json($poll);
+    }
 }

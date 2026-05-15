@@ -37,5 +37,12 @@ export function usePollStore() {
     }
   }
 
-  return { polls, setPolls, deletePoll, modifyPoll, createPoll };
+  async function startPoll(id) {
+    const result = await fetchApi({url:'polls/' + id + '/start', method:"PATCH"});
+    if (result) {
+        polls.value = polls.value.map(p => p.id === id ? result : p);
+    }
+  }
+
+  return { polls, setPolls, deletePoll, modifyPoll, createPoll, startPoll };
 }
