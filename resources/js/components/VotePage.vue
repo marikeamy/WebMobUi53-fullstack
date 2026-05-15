@@ -1,6 +1,6 @@
 <script setup>
 
-    import { ref, onMounted, computed } from 'vue'
+    import { ref, onMounted, onUnmounted, computed } from 'vue'
     import { useRoute } from 'vue-router'
     import { useFetchApi } from '@/composables/useFetchApi'
 
@@ -11,10 +11,15 @@
     const selectedOption = ref(null);
     const hasVoted = ref(false);
     const isClosed = computed(() => poll.value && new Date(poll.value.ends_at) < new Date());
+    let interval = null;
 
     onMounted(async () => {
         poll.value = await fetchApi({ url: 'polls/' + token, method: 'GET' })
+        if(isClosed.value){
+            startPolling();
+        }
     })
+    onUnmounted(() => clearInterval(interval));
 
     const totalVotes = computed(() =>
         poll.value ? poll.value.options.reduce((sum, o) => sum + o.votes_count, 0) : 0
@@ -25,8 +30,15 @@
     const submitVote = async () => {
         const result = await fetchApi({url:`options/${selectedOption.value}/vote`, method:"POST"});
         hasVoted.value = true;
-        poll.value = await fetchApi({url : 'polls/' + token, method:'GET'})
+        startPolling();
     };
+
+    //Fonction pour le polling en temps réel
+    function startPolling() {
+        interval = setInterval(async () => {
+            poll.value = await fetchApi({ url: 'polls/' + token, method: 'GET' })
+        }, 5000);
+    }
 
 </script>
 
