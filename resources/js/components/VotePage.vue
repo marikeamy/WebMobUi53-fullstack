@@ -8,14 +8,21 @@
     const route = useRoute()
     const token = route.params.token
     const { fetchApi } = useFetchApi()
+    const { fetchApi: fetchApiUser} = useFetchApi('/api')
     const poll = ref(null)
     const selectedOption = ref(null);
     const hasVoted = ref(false);
     const isClosed = computed(() => poll.value && new Date(poll.value.ends_at) < new Date());
+    const isAuthenticated = ref(null)
     let interval = null;
 
     onMounted(async () => {
         poll.value = await fetchApi({ url: 'polls/' + token, method: 'GET' })
+        try{
+            isAuthenticated.value = await fetchApiUser({url : '/user', method: 'GET'})
+        }catch{
+            isAuthenticated.value = false;
+        }
         if(isClosed.value){
             startPolling();
         }
@@ -38,7 +45,7 @@
     function startPolling() {
         interval = setInterval(async () => {
             poll.value = await fetchApi({ url: 'polls/' + token, method: 'GET' })
-        }, 5000);
+        }, 1000);
     }
 
 </script>
@@ -47,10 +54,35 @@
     <div class="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center px-4 py-8">
 
         <!-- Chargement -->
-        <p v-if="!poll" class="text-slate-500 dark:text-slate-400">Aucun sondage.</p>
+        <p v-if="!poll || isAuthenticated === null" class="text-slate-500 dark:text-slate-400">Chargement...</p>
 
-        <!-- Formulaire de vote -->
-        <div v-else-if="!hasVoted && !isClosed" class="w-full max-w-lg bg-white dark:bg-slate-800 rounded-xl shadow-lg p-8">
+        <!-- Non connecté + résultats non publics -->
+        <div v-else-if="!isAuthenticated && !poll.results_public" class="w-full max-w-lg bg-white dark:bg-slate-800 rounded-xl shadow-lg p-8 text-center">
+            <p class="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-2">Résultats non publics</p>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Les résultats de ce sondage ne sont pas accessibles publiquement.</p>
+        </div>
+
+        <!-- Non connecté + résultats publics -->
+        <div v-else-if="!isAuthenticated && poll.results_public" class="w-full max-w-lg bg-white dark:bg-slate-800 rounded-xl shadow-lg p-8">
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">{{ poll.title }}</h1>
+            <p class="text-slate-600 dark:text-slate-300 mb-2">{{ poll.question }}</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">{{ totalVotes }} vote{{ totalVotes !== 1 ? 's' : '' }} au total</p>
+            <div class="space-y-4">
+                <div v-for="option in poll.options" :key="option.id" class="p-3 rounded-lg border border-slate-200 dark:border-slate-600">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="font-medium text-slate-800 dark:text-slate-200">{{ option.label }}</span>
+                        <span class="text-slate-500 dark:text-slate-400">{{ pct(option.votes_count) }}% ({{ option.votes_count }})</span>
+                    </div>
+                    <div class="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2">
+                        <div class="h-2 rounded-full bg-teal-500 transition-all duration-500" :style="{ width: pct(option.votes_count) + '%' }"></div>
+                    </div>
+                </div>
+            </div>
+            <PollChart :options="poll.options" />
+        </div>
+
+        <!-- Formulaire de vote (connecté) -->
+        <div v-else-if="isAuthenticated && !hasVoted && !isClosed" class="w-full max-w-lg bg-white dark:bg-slate-800 rounded-xl shadow-lg p-8">
             <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">{{ poll.title }}</h1>
             <p class="text-slate-600 dark:text-slate-300 mb-6">{{ poll.question }}</p>
 

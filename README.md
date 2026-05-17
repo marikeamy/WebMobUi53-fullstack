@@ -12,6 +12,48 @@ L'objectif de ce mini-projet est de créer un réseau social simple en utilisant
 framework [Laravel](https://laravel.com/). Ce projet permettra de mettre en pratique les concepts
 appris dans le cours.
 
+---
+
+## Architecture frontend
+
+### Choix techniques
+
+| Technologie | Rôle |
+|---|---|
+| **Vue 3** (Composition API) | Framework frontend principal |
+| **Vue Router 4** | Navigation côté client dans chaque app Vue |
+| **Chart.js** + **vue-chartjs** | Visualisation des résultats sous forme de graphiques |
+| **Tailwind CSS 4** | Styles utilitaires, responsive/mobile first |
+| **Vite** + `laravel-vite-plugin` | Bundler et HMR en développement |
+
+### Plusieurs applications Vue distinctes
+
+Le frontend est découpé en **trois applications Vue indépendantes**, chacune avec son propre entrypoint Vite :
+
+| Entrypoint | Page Blade | URL | Rôle |
+|---|---|---|---|
+| `poll-dashboard.js` | `polls/dashboard.blade.php` | `/polls/dashboard` | Dashboard du créateur (liste, création, modification) |
+| `poll-vote.js` | `polls/vote.blade.php` | `/vote/{token}` | Vote et consultation via lien partagé |
+| `poll-results.js` | `polls/results.blade.php` | `/results/{id}` | Résultats détaillés pour le créateur |
+
+Chaque entrypoint importe `bootstrap.js` (configuration CSRF + URL de base de l'API), puis monte son app Vue avec Vue Router.
+
+### Pattern général
+
+```
+Vue Component
+  → Composable (usePollStore / useFetchApi)
+    → API JSON versionnée (/api/v1/...)
+      → Contrôleur Laravel
+        → Modèle Eloquent
+```
+
+Les composables isolent toute la logique d'appel API. Les composants Vue ne font que réagir à l'état réactif (`ref`, `computed`) et émettre des événements.
+
+### Authentification
+
+L'authentification repose sur le cookie de session Laravel (Sanctum SPA). Voir [`README_FRONT.md`](README_FRONT.md) pour les détails d'intégration (CSRF, middleware stateful, etc.).
+
 ## Pré-requis
 
 Afin de lancer ce projet, une stack compatible avec Laravel, est requise.

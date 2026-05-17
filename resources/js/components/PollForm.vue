@@ -18,26 +18,30 @@
     const allowMultipleChoices = ref(props.poll ? props.poll.allow_multiple_choices : false);
     const allowVoteChange = ref(props.poll ? props.poll.allow_vote_change : false);
     const resultsPublic = ref(props.poll ? props.poll.results_public : false);
-    const duration = ref(props.poll ? props.poll.duration : '');
+    const minEndsAt = new Date(Date.now() + 60 * 60 * 1000).toISOString().slice(0, 16);
+    const defaultEndsAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16);
+    const endsAt = ref(props.poll?.ends_at ? new Date(props.poll.ends_at).toISOString().slice(0, 16) : defaultEndsAt);
+
+    const getDuration = () => Math.round((new Date(endsAt.value) - new Date()) / 1000);
     const is_draft = ref(props.poll ? props.poll.is_draft : true)
     const addOption = () => options.value.push('');
 
     const submitPoll = async () => {
         if(!props.poll){
-            await createPoll({ title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: duration.value }, false);
+            await createPoll({ title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: getDuration() }, false);
             emit('close');
         }else{
-            await modifyPoll(props.poll.id, { title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: duration.value }, false);
+            await modifyPoll(props.poll.id, { title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: getDuration() }, false);
             emit('close');
         }
     };
 
     const saveDraft = async () => {
         if(!props.poll) {
-            await createPoll({ title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: duration.value }, true);
+            await createPoll({ title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: getDuration() }, true);
             emit('close');
         }else{
-            await modifyPoll(props.poll.id, { title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: duration.value }, true);
+            await modifyPoll(props.poll.id, { title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: getDuration() }, true);
             emit('close');
         }
     };
@@ -59,7 +63,7 @@
         </div>
 
         <div class="field">
-            <label>Options de réponse</label>
+            <label>Options de réponse <span class="required">*</span></label>
             <div v-for="(option, index) in options" :key="index" class="option-row">
                 <span class="option-num">{{ index + 1 }}</span>
                 <input v-model="options[index]" type="text" :placeholder="'Option ' + (index + 1)" />
@@ -68,8 +72,8 @@
         </div>
 
         <div class="field">
-            <label>Durée <span class="optional">(secondes, optionnel)</span></label>
-            <input v-model="duration" type="number" min="0" placeholder="ex: 3600" />
+            <label>Date et heure de fin <span class="required">*</span></label>
+            <input v-model="endsAt" type="datetime-local" :min="minEndsAt" />
         </div>
 
         <div class="checkboxes">
@@ -122,7 +126,8 @@
     }
 
     .field input[type="text"],
-    .field input[type="number"] {
+    .field input[type="number"],
+    .field input[type="datetime-local"] {
         background: #1e293b;
         border: 1px solid #4c1d95;
         border-radius: 0.375rem;

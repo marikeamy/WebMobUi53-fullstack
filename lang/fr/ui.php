@@ -231,6 +231,6 @@ return [
         ],
     ],
     'polls' => [
-        'see_polls' => 'Tous les sondages',
+        'see_polls' => 'Mes sondages',
     ],
 ];
