@@ -20,11 +20,11 @@ appris dans le cours.
 
 | Technologie | Rôle |
 |---|---|
-| Vue 3 (Composition API) -> Framework frontend principal 
-| Vue Router 4 -> Navigation côté client dans chaque app Vue 
-| Chart.js + vue-chartjs -> Visualisation des résultats sous forme de graphiques 
-| Tailwind CSS 4 -> Styles utilitaires, responsive/mobile first
-| Vite + laravel-vite-plugin -> Bundler et HMR en développement
+| **Vue 3** (Composition API) | Framework frontend principal |
+| **Vue Router 4** | Navigation côté client dans chaque app Vue |
+| **Chart.js** + **vue-chartjs** | Visualisation des résultats sous forme de graphiques |
+| **Tailwind CSS 4** | Styles utilitaires, responsive/mobile first |
+| **Vite** + `laravel-vite-plugin` | Bundler et HMR en développement |
 
 ### Plusieurs applications Vue distinctes
 
