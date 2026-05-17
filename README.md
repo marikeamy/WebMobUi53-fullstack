@@ -9,7 +9,7 @@ Suisse.
 ## Objectif du mini-projet
 
 L'objectif de ce mini-projet est de créer un réseau social simple en utilisant le
-framework [Laravel](https://laravel.com/). Ce projet permettra de mettre en pratique les concepts
+framework [Laravel](https://laravel.com/) et Vue 3. Ce projet permettra de mettre en pratique les concepts
 appris dans le cours.
 
 ---
@@ -20,15 +20,15 @@ appris dans le cours.
 
 | Technologie | Rôle |
 |---|---|
-| **Vue 3** (Composition API) | Framework frontend principal |
-| **Vue Router 4** | Navigation côté client dans chaque app Vue |
-| **Chart.js** + **vue-chartjs** | Visualisation des résultats sous forme de graphiques |
-| **Tailwind CSS 4** | Styles utilitaires, responsive/mobile first |
-| **Vite** + `laravel-vite-plugin` | Bundler et HMR en développement |
+| Vue 3 (Composition API) -> Framework frontend principal 
+| Vue Router 4 -> Navigation côté client dans chaque app Vue 
+| Chart.js + vue-chartjs -> Visualisation des résultats sous forme de graphiques 
+| Tailwind CSS 4 -> Styles utilitaires, responsive/mobile first
+| Vite + laravel-vite-plugin -> Bundler et HMR en développement
 
 ### Plusieurs applications Vue distinctes
 
-Le frontend est découpé en **trois applications Vue indépendantes**, chacune avec son propre entrypoint Vite :
+Le frontend est découpé en trois applications Vue indépendantes, chacune avec son propre entrypoint Vite :
 
 | Entrypoint | Page Blade | URL | Rôle |
 |---|---|---|---|
