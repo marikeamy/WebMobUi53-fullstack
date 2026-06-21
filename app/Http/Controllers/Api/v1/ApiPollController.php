@@ -80,7 +80,7 @@ class ApiPollController extends Controller
         }
 
         $poll->save();
-        return $poll;
+        return $poll->load('options');
     }
 
     /**
@@ -150,7 +150,6 @@ class ApiPollController extends Controller
         }
 
         $poll->save();
-        //c quoi load ?
         return $poll->load('options');
     }
 

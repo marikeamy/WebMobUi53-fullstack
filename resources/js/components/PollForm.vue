@@ -4,6 +4,7 @@
 
     //defineEmits permet à un composant enfant d'envoyer un signal vers son parent.
     //ici, quand le formulaire est soumis, pollForm dit à son parent (pollTable) qu'il faut fermer le modal.
+    //(En vue, un composant peut seulement émettre vers celui qui l'a inclus dans son template.)
     const emit = defineEmits(['close']);
     //L'inverse de defineEmits sont les props. C'est le parent qui envoie un signal à son enfant.
     //(PollForm reçoit le poll de Polltable ici)
@@ -41,7 +42,7 @@
             await createPoll({ title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: getDuration() }, true);
             emit('close');
         }else{
-            await modifyPoll(props.poll.id, { title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: getDuration() }, true);
+            await modifyPoll(props.poll.id, { title: title.value, question: question.value, options: options.value, allowMultipleChoices: allowMultipleChoices.value, allowVoteChange: allowVoteChange.value, resultsPublic: resultsPublic.value, duration: getDuration() }, is_draft.value);
             emit('close');
         }
     };
@@ -94,7 +95,7 @@
         <div class="actions">
             <button v-if="poll" type="button" class="btn-draft" @click="saveDraft">Valider les modifications</button>
             <button v-else type="button" class="btn-draft" @click="saveDraft">Sauvegarder en brouillon</button>
-            <button type="button" class="btn-submit" @click="submitPoll">Publier le sondage</button>
+            <button v-if="!poll || poll.is_draft" type="button" class="btn-submit" @click="submitPoll">Publier le sondage</button>
         </div>
     </form>
 </template>
