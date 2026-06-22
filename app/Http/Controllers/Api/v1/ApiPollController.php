@@ -154,8 +154,11 @@ class ApiPollController extends Controller
     }
 
     public function vote(Request $request, int $id){
-        //get option
         $option = PollOption::findOrFail($id);
+
+        PollVote::where('poll_id', $option->poll_id)
+            ->where('user_id', $request->user()->id)
+            ->delete();
 
         $pollVote = PollVote::create([
             'poll_id' => $option->poll_id,

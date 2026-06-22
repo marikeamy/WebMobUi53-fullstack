@@ -2,7 +2,12 @@
   import PollTable from './components/PollTable.vue';
   import { usePollStore } from '@/stores/usePollStore';
   import { onMounted } from 'vue';
-  import { useFetchApi } from '@/composables/useFetchApi';
+  import { useFetchApi } from '@/composables/useFetchApi'
+
+  const { fetchApi: fetchApiUser} = useFetchApi('/api')
+    onMounted(async () => {
+        poll.value = await fetchApi()
+    })
 
   const props = defineProps({
     polls: { type: Array, default: () => [] },
@@ -11,14 +16,7 @@
   });
 
   const { setPolls } = usePollStore();
-  const { fetchApi } = useFetchApi();
-
   setPolls(props.polls);
-
-  onMounted(async () => {
-    const result = await fetchApi({ url: 'polls/' });
-    if (result) setPolls(result);
-  });
 </script>
 
 <template>

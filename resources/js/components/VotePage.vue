@@ -11,8 +11,14 @@
     const { fetchApi: fetchApiUser} = useFetchApi('/api')
     const poll = ref(null)
     const selectedOption = ref(null);
+    const selectedOptions = ref([]);
     const hasVoted = ref(false);
     const isClosed = computed(() => poll.value && new Date(poll.value.ends_at) < new Date());
+    const canVote = computed(() =>
+        poll.value?.allow_multiple_choices ? selectedOptions.value.length > 0 : selectedOption.value !== null
+    );
+    const isSelected = (optionId) =>
+        poll.value?.allow_multiple_choices ? selectedOptions.value.includes(optionId) : optionId === selectedOption.value;
     const isAuthenticated = ref(null)
     let interval = null;
 
@@ -36,7 +42,13 @@
     const pct = (votes_count) => totalVotes.value === 0 ? 0 : Math.round(votes_count / totalVotes.value * 100)
 
     const submitVote = async () => {
-        const result = await fetchApi({url:`options/${selectedOption.value}/vote`, method:"POST"});
+        if (poll.value.allow_multiple_choices) {
+            for (const optionId of selectedOptions.value) {
+                await fetchApi({ url: `options/${optionId}/vote`, method: 'POST' });
+            }
+        } else {
+            await fetchApi({ url: `options/${selectedOption.value}/vote`, method: 'POST' });
+        }
         hasVoted.value = true;
         startPolling();
     };
@@ -92,9 +104,10 @@
                     v-for="option in poll.options"
                     :key="option.id"
                     class="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-600 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition"
-                    :class="{ 'border-teal-500 bg-teal-50 dark:bg-teal-900/20': selectedOption === option.id }"
+                    :class="{ 'border-teal-500 bg-teal-50 dark:bg-teal-900/20': isSelected(option.id) }"
                 >
-                    <input v-model="selectedOption" type="radio" name="options" :value="option.id" class="accent-teal-600">
+                    <input v-if="poll.allow_multiple_choices" v-model="selectedOptions" type="checkbox" :value="option.id" class="accent-teal-600">
+                    <input v-else v-model="selectedOption" type="radio" name="options" :value="option.id" class="accent-teal-600">
                     <span class="text-slate-800 dark:text-slate-200">{{ option.label }}</span>
                 </label>
             </fieldset>
@@ -102,9 +115,9 @@
             <button
                 type="button"
                 @click="submitVote"
-                :disabled="!selectedOption"
+                :disabled="!canVote"
                 class="w-full py-2 px-4 rounded-md text-white font-semibold transition"
-                :class="selectedOption ? 'bg-teal-600 hover:bg-teal-700 cursor-pointer' : 'bg-slate-300 dark:bg-slate-600 cursor-not-allowed'"
+                :class="canVote ? 'bg-teal-600 hover:bg-teal-700 cursor-pointer' : 'bg-slate-300 dark:bg-slate-600 cursor-not-allowed'"
             >
                 Voter
             </button>
@@ -152,18 +165,18 @@
             <div class="space-y-4">
                 <div v-for="option in poll.options" :key="option.id"
                     class="p-3 rounded-lg border transition"
-                    :class="option.id === selectedOption ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' : 'border-slate-200 dark:border-slate-600'"
+                    :class="isSelected(option.id) ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20' : 'border-slate-200 dark:border-slate-600'"
                 >
                     <div class="flex justify-between text-sm mb-1">
                         <span class="font-medium text-slate-800 dark:text-slate-200">
                             {{ option.label }}
-                            <span v-if="option.id === selectedOption" class="ml-1 text-teal-600 dark:text-teal-400 text-xs">✓ votre choix</span>
+                            <span v-if="isSelected(option.id)" class="ml-1 text-teal-600 dark:text-teal-400 text-xs">✓ votre choix</span>
                         </span>
                         <span class="text-slate-500 dark:text-slate-400">{{ pct(option.votes_count) }}% ({{ option.votes_count }})</span>
                     </div>
                     <div class="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2">
                         <div class="h-2 rounded-full transition-all duration-500"
-                            :class="option.id === selectedOption ? 'bg-teal-500' : 'bg-slate-400 dark:bg-slate-500'"
+                            :class="isSelected(option.id) ? 'bg-teal-500' : 'bg-slate-400 dark:bg-slate-500'"
                             :style="{ width: pct(option.votes_count) + '%' }"
                         ></div>
                     </div>
@@ -171,6 +184,15 @@
             </div>
 
             <PollChart :options="poll.options" />
+
+            <button
+                v-if="poll.allow_vote_change"
+                type="button"
+                @click="hasVoted = false; selectedOption = null; selectedOptions = []"
+                class="mt-6 w-full py-2 px-4 rounded-md border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+            >
+                Changer mon vote
+            </button>
         </div>
 
     </div>
