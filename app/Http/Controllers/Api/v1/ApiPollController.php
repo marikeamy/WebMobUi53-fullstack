@@ -155,10 +155,18 @@ class ApiPollController extends Controller
 
     public function vote(Request $request, int $id){
         $option = PollOption::findOrFail($id);
+        $poll = $option->poll;
 
-        PollVote::where('poll_id', $option->poll_id)
-            ->where('user_id', $request->user()->id)
-            ->delete();
+        if ($poll->allow_multiple_choices) {
+            PollVote::where('poll_id', $option->poll_id)
+                ->where('poll_option_id', $option->id)
+                ->where('user_id', $request->user()->id)
+                ->delete();
+        } else {
+            PollVote::where('poll_id', $option->poll_id)
+                ->where('user_id', $request->user()->id)
+                ->delete();
+        }
 
         $pollVote = PollVote::create([
             'poll_id' => $option->poll_id,

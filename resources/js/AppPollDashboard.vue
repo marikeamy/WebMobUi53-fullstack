@@ -4,10 +4,11 @@
   import { onMounted } from 'vue';
   import { useFetchApi } from '@/composables/useFetchApi'
 
-  const { fetchApi: fetchApiUser} = useFetchApi('/api')
-    onMounted(async () => {
-        poll.value = await fetchApi()
-    })
+  const { fetchApi } = useFetchApi()
+  onMounted(async () => {
+      const polls = await fetchApi({ url: 'polls', method: 'GET' })
+      setPolls(polls)
+  })
 
   const props = defineProps({
     polls: { type: Array, default: () => [] },
